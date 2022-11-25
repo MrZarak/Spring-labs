@@ -1,0 +1,48 @@
+<h1>Books List</h1>
+
+<table border="1px">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Author name</th>
+		<th>Keywords</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="book : ${books}">
+		<td th:text="${book.name}"></td>
+		<td th:text="${book.authorName}"></td>
+		<td th:text="${book.keywords}">
+	</tr>
+	</tbody>
+</table>
+
+<form action="/books/by-name">
+	<p>Search by name:</p>
+	<label>
+		<input type="text" name="name"/>
+	</label>
+	<label>
+		<input value="Search" type="submit">
+	</label>
+</form>
+
+<form action="/books/by-author">
+	<p>Search by name:</p>
+	<label>
+		<input type="text" name="authorName"/>
+	</label>
+	<label>
+		<input value="Search" type="submit">
+	</label>
+</form>
+
+<form action="/books/by-keyword">
+	<p>Search by keyword:</p>
+	<label>
+		<input type="text" name="keyword"/>
+	</label>
+	<label>
+		<input value="Search" type="submit">
+	</label>
+</form>
