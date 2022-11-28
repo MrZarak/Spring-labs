@@ -23,9 +23,7 @@ public interface BookRepository {
 
 	List<Book> findByKeywordIn(Keyword keyWord);
 
-	Book addBook(Book book);
+	Book saveBook(Book book);
 
 	Optional<Book> deleteBook(UUID bookId);
-
-	Optional<Book> changeBookName(UUID bookId, String name);
 }

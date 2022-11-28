@@ -23,16 +23,6 @@ public class BookServiceImpl implements BookService {
 	public BookServiceImpl(BookRepository bookRepository, KeywordRepository keywordRepository) {
 		this.bookRepository = bookRepository;
 		this.keywordRepository = keywordRepository;
-		Keyword keyword1 = keywordRepository.findByValue("Keyword1").orElse(null);
-		Keyword keyword2 = keywordRepository.findByValue("Keyword2").orElse(null);
-		Book book1 = new Book(UUID.randomUUID(), "Some1", "Book1", List.of(keyword1));
-		Book book2 = new Book(UUID.randomUUID(), "Some2", "Book2", List.of(keyword2));
-		Book book3 = new Book(UUID.randomUUID(), "Some3", "Book3", List.of());
-		Book book4 = new Book(UUID.randomUUID(), "Some2", "Book4", List.of(keyword1, keyword2));
-		bookRepository.addBook(book1);
-		bookRepository.addBook(book2);
-		bookRepository.addBook(book3);
-		bookRepository.addBook(book4);
 	}
 
 
@@ -65,17 +55,14 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public Book createBook(BookInput bookInput) {
-		UUID bookId = bookInput.id() == null ? UUID.randomUUID() : bookInput.id();
 		Collection<Keyword> keywords = getKeywords(bookInput.keywords());
-
-		Book book = new Book(bookId, bookInput.name(), bookInput.authorName(), keywords);
-
-		bookRepository.addBook(book);
-		return book;
+		Book book = new Book(bookInput.id(), bookInput.name(), bookInput.authorName(), keywords);
+		return bookRepository.saveBook(book);
 	}
 
 	@Override
 	public Optional<Book> editBook(BookInput bookInput) {
+
 		return bookRepository
 				.findById(bookInput.id())
 				.map(book -> {
@@ -89,6 +76,8 @@ public class BookServiceImpl implements BookService {
 						Collection<Keyword> keywords = getKeywords(bookInput.keywords());
 						book.setKeywords(keywords);
 					}
+
+					bookRepository.saveBook(book);
 					return book;
 				});
 	}
@@ -106,7 +95,7 @@ public class BookServiceImpl implements BookService {
 					Keyword keyword = keywordRepository.findByValue(keyRaw).orElse(null);
 					if (keyword == null) {
 						keyword = new Keyword(UUID.randomUUID(), keyRaw);
-						keywordRepository.addKeyword(keyword);
+						keywordRepository.saveKeyword(keyword);
 					}
 					return keyword;
 				})
