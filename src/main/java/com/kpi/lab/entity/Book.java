@@ -1,25 +1,35 @@
 package com.kpi.lab.entity;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "books")
+@NamedQuery(name = "Book.findByAuthor", query = "SELECT b FROM Book b WHERE b.authorName = ?1")
 public class Book {
+	@Id
+	@Column(name = "id", nullable = false, unique = true)
 	private UUID id;
+	@Column(name = "name", nullable = false)
+
 	private String name;
+	@Column(name = "author_name", nullable = false)
 	private String authorName;
-	private Collection<Keyword> keywords;
-
-	public Book(UUID id, String authorName, String name, Collection<Keyword> keywords) {
-		this.id = id;
-		this.authorName = authorName;
-		this.name = name;
-		this.keywords = List.copyOf(keywords);
-	}
-
-	public Book() {
-		keywords = List.of();
-	}
+	@ManyToMany(targetEntity = Keyword.class, cascade = CascadeType.ALL)
+	@JoinTable(name = "books_keywords", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
+	private Set<Keyword> keywords = new HashSet<>();
 
 	public UUID getId() {
 		return id;
@@ -37,8 +47,13 @@ public class Book {
 		this.authorName = authorName;
 	}
 
-	public void setKeywords(Collection<Keyword> keywords) {
+	public void setKeywords(Set<Keyword> keywords) {
 		this.keywords = keywords;
+	}
+
+	public void addKeyword(Keyword keyword) {
+		this.keywords.add(keyword);
+		keyword.getBooks().add(this);
 	}
 
 	public String getName() {

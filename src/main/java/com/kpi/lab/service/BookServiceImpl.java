@@ -3,13 +3,16 @@ package com.kpi.lab.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kpi.lab.controllers.BookInput;
+import com.kpi.lab.dto.BookInput;
 import com.kpi.lab.entity.Book;
 import com.kpi.lab.entity.Keyword;
 import com.kpi.lab.repositories.BookRepository;
@@ -28,12 +31,12 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public List<Book> getAllBooks() {
-		return bookRepository.getAllBooks();
+		return bookRepository.findAll();
 	}
 
 	@Override
 	public Page<Book> getAllBooks(Pageable pageable) {
-		return bookRepository.getAllBooks(pageable);
+		return bookRepository.findAll(pageable);
 	}
 
 	@Override
@@ -48,19 +51,23 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public List<Book> findByKeywordIn(String keyWord) {
-		return keywordRepository.findByValue(keyWord)
-				.map(bookRepository::findByKeywordIn)
-				.orElse(List.of());
+		return bookRepository.findByKeywordIn(keyWord);
 	}
 
 	@Override
+	@Transactional
 	public Book createBook(BookInput bookInput) {
-		Collection<Keyword> keywords = getKeywords(bookInput.keywords());
-		Book book = new Book(bookInput.id(), bookInput.name(), bookInput.authorName(), keywords);
-		return bookRepository.saveBook(book);
+		Set<Keyword> keywords = getKeywords(bookInput.keywords());
+		Book book = new Book();
+		book.setId(bookInput.id());
+		book.setName(bookInput.name());
+		book.setAuthorName(bookInput.authorName());
+		book.setKeywords(keywords);
+		return bookRepository.save(book);
 	}
 
 	@Override
+	@Transactional
 	public Optional<Book> editBook(BookInput bookInput) {
 
 		return bookRepository
@@ -73,32 +80,37 @@ public class BookServiceImpl implements BookService {
 						book.setAuthorName(bookInput.authorName());
 					}
 					if (bookInput.authorName() != null) {
-						Collection<Keyword> keywords = getKeywords(bookInput.keywords());
+						Set<Keyword> keywords = getKeywords(bookInput.keywords());
 						book.setKeywords(keywords);
 					}
 
-					bookRepository.saveBook(book);
+					bookRepository.save(book);
 					return book;
 				});
 	}
 
 
 	@Override
+	@Transactional
 	public Optional<Book> deleteBook(UUID bookId) {
-		return bookRepository.deleteBook(bookId);
+		Optional<Book> byId = bookRepository.findById(bookId);
+		byId.ifPresent(bookRepository::delete);
+		return byId;
 	}
 
-	private Collection<Keyword> getKeywords(Collection<String> keywords) {
+	private Set<Keyword> getKeywords(Collection<String> keywords) {
 		return keywords.stream()
 				.map(String::trim)
 				.map(keyRaw -> {
 					Keyword keyword = keywordRepository.findByValue(keyRaw).orElse(null);
 					if (keyword == null) {
-						keyword = new Keyword(UUID.randomUUID(), keyRaw);
-						keywordRepository.saveKeyword(keyword);
+						keyword = new Keyword();
+						keyword.setId(UUID.randomUUID());
+						keyword.setValue(keyRaw);
+						keywordRepository.save(keyword);
 					}
 					return keyword;
 				})
-				.toList();
+				.collect(Collectors.toSet());
 	}
 }

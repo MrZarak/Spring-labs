@@ -1,4 +1,4 @@
-package com.kpi.lab.controllers;
+package com.kpi.lab.dto;
 
 import java.util.Collection;
 import java.util.UUID;

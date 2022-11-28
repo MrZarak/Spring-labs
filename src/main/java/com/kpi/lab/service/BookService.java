@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kpi.lab.controllers.BookInput;
+import com.kpi.lab.dto.BookInput;
 import com.kpi.lab.entity.Book;
 
 public interface BookService {

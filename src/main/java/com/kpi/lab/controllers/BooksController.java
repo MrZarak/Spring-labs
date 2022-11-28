@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kpi.lab.dto.BookInput;
+import com.kpi.lab.dto.BookInputId;
 import com.kpi.lab.entity.Book;
 import com.kpi.lab.service.BookService;
 
