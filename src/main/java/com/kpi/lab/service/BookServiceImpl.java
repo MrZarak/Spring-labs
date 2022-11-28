@@ -1,13 +1,15 @@
 package com.kpi.lab.service;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.kpi.lab.controllers.BookInput;
 import com.kpi.lab.entity.Book;
 import com.kpi.lab.entity.Keyword;
 import com.kpi.lab.repositories.BookRepository;
@@ -40,6 +42,11 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
+	public Page<Book> getAllBooks(Pageable pageable) {
+		return bookRepository.getAllBooks(pageable);
+	}
+
+	@Override
 	public List<Book> findByAuthor(String authorName) {
 		return bookRepository.findByAuthor(authorName);
 	}
@@ -57,26 +64,43 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public Book createBook(String name, String authorName, String keywordsNotSplited) {
-		Book book = new Book(UUID.randomUUID(), authorName, name, getKeywords(keywordsNotSplited));
-		return bookRepository.addBook(book);
+	public Book createBook(BookInput bookInput) {
+		UUID bookId = bookInput.id() == null ? UUID.randomUUID() : bookInput.id();
+		Collection<Keyword> keywords = getKeywords(bookInput.keywords());
+
+		Book book = new Book(bookId, bookInput.name(), bookInput.authorName(), keywords);
+
+		bookRepository.addBook(book);
+		return book;
 	}
+
+	@Override
+	public Optional<Book> editBook(BookInput bookInput) {
+		return bookRepository
+				.findById(bookInput.id())
+				.map(book -> {
+					if (bookInput.name() != null) {
+						book.setName(bookInput.name());
+					}
+					if (bookInput.authorName() != null) {
+						book.setAuthorName(bookInput.authorName());
+					}
+					if (bookInput.authorName() != null) {
+						Collection<Keyword> keywords = getKeywords(bookInput.keywords());
+						book.setKeywords(keywords);
+					}
+					return book;
+				});
+	}
+
 
 	@Override
 	public Optional<Book> deleteBook(UUID bookId) {
 		return bookRepository.deleteBook(bookId);
 	}
 
-	@Override
-	public Optional<Book> changeBookName(UUID bookId, String name) {
-		return bookRepository.changeBookName(bookId, name);
-	}
-
-	private Collection<Keyword> getKeywords(String keywordsNotSplited) {
-		return Optional.ofNullable(keywordsNotSplited)
-				.map(it -> it.split(";"))
-				.stream()
-				.flatMap(Arrays::stream)
+	private Collection<Keyword> getKeywords(Collection<String> keywords) {
+		return keywords.stream()
 				.map(String::trim)
 				.map(keyRaw -> {
 					Keyword keyword = keywordRepository.findByValue(keyRaw).orElse(null);

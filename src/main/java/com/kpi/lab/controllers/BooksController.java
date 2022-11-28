@@ -1,80 +1,88 @@
 package com.kpi.lab.controllers;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.kpi.lab.entity.Book;
 import com.kpi.lab.service.BookService;
 
-@Controller
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+@RestController
 @RequestMapping("/books")
 public class BooksController {
 	@Autowired
 	private BookService bookService;
 
+	@Operation(summary = "Get all books", description = "Get all books BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
 	@GetMapping
-	public String view(Model model) {
-		model.addAttribute("books", bookService.getAllBooks());
-		return "index";
+	public List<Book> getAllBooks() {
+		return bookService.getAllBooks();
 	}
 
-	@GetMapping("/admin")
-	public String viewAdmin(Model model) {
-		model.addAttribute("books", bookService.getAllBooks());
-		return "admin";
+	@Operation(summary = "Get all books in page", description = "Get all books in page. BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@GetMapping("/page")
+	public Page<Book> getAllBooks(@PageableDefault Pageable pageable) {
+		return bookService.getAllBooks(pageable);
 	}
 
-	@GetMapping("/by-author")
-	public String viewAuthor(@RequestParam String authorName, Model model) {
-		authorName = authorName.trim();
-		List<Book> byName = bookService.findByAuthor(authorName);
-		model.addAttribute("authorName", authorName);
-		model.addAttribute("books", byName);
-		return "by_name";
+	@Operation(summary = "Get all books with author name in", description = "Get all books with author name in. BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@GetMapping("/with-author")
+	public List<Book> viewAuthor(@RequestParam String authorName) {
+		return bookService.findByAuthor(authorName.trim());
 	}
 
-	@GetMapping("/by-name")
-	public String viewName(@RequestParam String name, Model model) {
-		name = name.trim();
-		List<Book> byName = bookService.findByName(name);
-		model.addAttribute("name", name);
-		model.addAttribute("books", byName);
-		return "by_name";
+	@Operation(summary = "Get all books by name", description = "Get all books by name. BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@GetMapping("/with-name")
+	public List<Book> viewName(@RequestParam String name) {
+		return bookService.findByName(name.trim());
 	}
 
-	@GetMapping("/by-keyword")
-	public String viewKeyword(@RequestParam String keyword, Model model) {
-		keyword = keyword.trim();
-		List<Book> byName = bookService.findByKeywordIn(keyword);
-		model.addAttribute("keyword", keyword);
-		model.addAttribute("books", byName);
-		return "by_name";
+	@Operation(summary = "Get all books with keyword in", description = "Get all books with keyword in. BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@GetMapping("/with-keyword")
+	public List<Book> viewKeyword(@RequestParam String keyword) {
+		return bookService.findByKeywordIn(keyword.trim());
 	}
 
-	@PostMapping("/add")
-	public String addBook(@RequestParam String name, @RequestParam String authorName, @RequestParam String keywordsNotSplited) {
-		bookService.createBook(name, authorName, keywordsNotSplited);
-		return "redirect:/books/admin";
+	@Operation(summary = "Create book", description = "Create book BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@PostMapping
+	public Book createBook(@RequestBody BookInput input) {
+		return bookService.createBook(input);
 	}
 
-	@PostMapping("/edit")
-	public String editBookName(@ModelAttribute("bookId") UUID bookId, @ModelAttribute("name") String name) {
-		bookService.changeBookName(bookId, name);
-		return "redirect:/books/admin";
+	@Operation(summary = "Edit book", description = "Edit book BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiResponse(responseCode = "404", description = "Book not found")
+	@PatchMapping
+	public ResponseEntity<Book> editBook(@RequestBody BookInput input) {
+		return ResponseEntity.of(bookService.editBook(input));
 	}
 
-	@PostMapping("/delete")
-	public String deleteBook(@ModelAttribute("bookId") UUID bookId) {
-		bookService.deleteBook(bookId);
-		return "redirect:/books/admin";
+	@Operation(summary = "Delete book", description = "Delete book BIG DESCR")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiResponse(responseCode = "404", description = "Book not found")
+	@DeleteMapping
+	public ResponseEntity<Book> deleteBook(@RequestBody BookInputId input) {
+		return ResponseEntity.of(bookService.deleteBook(input.id()));
 	}
 }

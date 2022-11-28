@@ -6,6 +6,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.kpi.lab.entity.Book;
@@ -18,6 +21,21 @@ public class BookRepositoryImpl implements BookRepository {
 	@Override
 	public List<Book> getAllBooks() {
 		return List.copyOf(books);
+	}
+
+	@Override
+	public Page<Book> getAllBooks(Pageable pageable) {
+		List<Book> content = books.stream().skip(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.toList();
+		return new PageImpl<>(content, pageable, books.size());
+	}
+
+	@Override
+	public Optional<Book> findById(UUID bookId) {
+		return books.stream()
+				.filter(book -> Objects.equals(bookId, book.getId()))
+				.findFirst();
 	}
 
 	@Override
