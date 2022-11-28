@@ -1,4 +1,4 @@
-package com.kpi.lab1.controllers;
+package com.kpi.lab.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.kpi.lab1.entity.Book;
-import com.kpi.lab1.service.BookService;
+import com.kpi.lab.entity.Book;
+import com.kpi.lab.service.BookService;
 
 @Controller
 @RequestMapping("/books")

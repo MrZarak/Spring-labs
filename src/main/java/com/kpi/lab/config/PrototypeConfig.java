@@ -1,4 +1,4 @@
-package com.kpi.lab1.config;
+package com.kpi.lab.config;
 
 import java.util.UUID;
 
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import com.kpi.lab1.entity.Actor;
+import com.kpi.lab.entity.Actor;
 @Configuration
 public class PrototypeConfig {
 

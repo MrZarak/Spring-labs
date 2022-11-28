@@ -1,4 +1,4 @@
-package com.kpi.lab1.repositories;
+package com.kpi.lab.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.kpi.lab1.entity.Keyword;
+import com.kpi.lab.entity.Keyword;
 
 @Repository
 public class KeywordRepositoryImpl implements KeywordRepository {

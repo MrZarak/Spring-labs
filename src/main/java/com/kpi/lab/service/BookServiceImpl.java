@@ -1,4 +1,4 @@
-package com.kpi.lab1.service;
+package com.kpi.lab.service;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,10 +8,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.kpi.lab1.entity.Book;
-import com.kpi.lab1.entity.Keyword;
-import com.kpi.lab1.repositories.BookRepository;
-import com.kpi.lab1.repositories.KeywordRepository;
+import com.kpi.lab.entity.Book;
+import com.kpi.lab.entity.Keyword;
+import com.kpi.lab.repositories.BookRepository;
+import com.kpi.lab.repositories.KeywordRepository;
 
 @Service
 public class BookServiceImpl implements BookService {

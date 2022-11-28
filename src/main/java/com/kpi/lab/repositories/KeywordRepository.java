@@ -1,9 +1,9 @@
-package com.kpi.lab1.repositories;
+package com.kpi.lab.repositories;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.kpi.lab1.entity.Keyword;
+import com.kpi.lab.entity.Keyword;
 
 public interface KeywordRepository {
 	List<Keyword> getAll();

@@ -9,9 +9,9 @@
 	</thead>
 	<tbody>
 	<tr th:each="book : ${books}">
-		<td th:text="${book.name}"></td>
-		<td th:text="${book.authorName}"></td>
-		<td th:text="${book.keywords}">
+		<td th:text="${book.name} ?: 'UNKNOWN'"></td>
+		<td th:text="${book.authorName} ?: 'UNKNOWN'"></td>
+		<td th:text="${book.keywords} ?: 'UNKNOWN'">
 	</tr>
 	</tbody>
 </table>

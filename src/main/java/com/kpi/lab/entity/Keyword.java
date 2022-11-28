@@ -1,4 +1,4 @@
-package com.kpi.lab1.entity;
+package com.kpi.lab.entity;
 
 import java.util.Objects;
 import java.util.UUID;

@@ -1,11 +1,11 @@
-package com.kpi.lab1.service;
+package com.kpi.lab.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
-import com.kpi.lab1.entity.Actor;
+import com.kpi.lab.entity.Actor;
 
 @Service
 public class ActorServiceImpl implements ActorService {
